@@ -30,8 +30,8 @@ class CocoKp(openpifpaf.datasets.DataModule, openpifpaf.Configurable):
     _test2017_image_dir = '/work/scitas-share/datasets/Vita/civil-459/data-coco/images/test2017/'
 
     # cli configurable
-    train_annotations = '/work/scitas-share/datasets/Vita/civil-459/data-coco/annotations/person_keypoints_train2017.json'
-    val_annotations = '/work/scitas-share/datasets/Vita/civil-459/data-coco/annotations/person_keypoints_val2017.json'
+    train_annotations = '/work/scitas-share/datasets/Vita/civil-459/wholebody_annotations/person_keypoints_train2017_wholebody_pifpaf_style.json'
+    val_annotations = '/work/scitas-share/datasets/Vita/civil-459/wholebody_annotations/person_keypoints_val2017_wholebody_pifpaf_style.json'
     eval_annotations = val_annotations
     train_image_dir = '/work/scitas-share/datasets/Vita/civil-459/data-coco/images/train2017/'
     val_image_dir = '/work/scitas-share/datasets/Vita/civil-459/data-coco/images/val2017/'
