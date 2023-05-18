@@ -9,47 +9,30 @@ The particular configuration of keypoints and skeleton is specified in the headm
 
 import argparse
 import torch
-
-try:
-    from pycocotools.coco import COCO
-except ImportError:
-    COCO = None
+import pycocotools
 
 from openpifpaf.datasets import DataModule
 from openpifpaf import encoder, headmeta, metric, transforms
 from openpifpaf.datasets import collate_images_anns_meta, collate_images_targets_meta
-from openpifpaf.plugins.coco import CocoDataset as CocoLoader
 
 from .constants import ANIMAL_KEYPOINTS, ANIMAL_SKELETON, HFLIP, \
     ANIMAL_SIGMAS, ANIMAL_POSE, ANIMAL_CATEGORIES, ANIMAL_SCORE_WEIGHTS
+from .dataloader import Animal
 
 
 class AnimalKp(DataModule):
     """
     Adapted from the standard CocoKp class to work as external plugin
     """
-    #for training with all images
-    #train_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose\\annotations\\animal_keypoints_20_train.json'
-    #val_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose\\annotations\\animal_keypoints_20_val.json'
 
-    #for training with sample
-    #train_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-sample\\annotations\\animal_keypoints_20_sample_train.json'
-    #val_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-sample\\annotations\\animal_keypoints_20_sample_val.json'
+    # cli configurable (TODO)
+    _test2017_annotations = 'data-mscoco/annotations/image_info_test2017.json'
+    _testdev2017_annotations = 'data-mscoco/annotations/image_info_test-dev2017.json'
+    _test2017_image_dir = 'data-mscoco/images/test2017/'
 
-    #for training with 2 images
     train_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\annotations\\animal_keypoints_20_sample_train.json'
     val_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\annotations\\animal_keypoints_20_sample_val.json'
     eval_annotations = val_annotations
-
-    #training with all images
-    #train_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose\\images\\train'
-    #val_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose\\images\\val'
-
-    #training with sample
-    #train_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-sample\\images\\train'
-    #val_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-sample\\images\\val'
-
-    #training with two images
     train_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\images\\train'
     val_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\images\\val'
     eval_image_dir = val_image_dir
@@ -139,16 +122,16 @@ class AnimalKp(DataModule):
         eval_set_group.add_argument('--animal-eval-testdev2017', default=False, action='store_true')
 
         group.add_argument('--animal-no-eval-annotation-filter',
-                           dest='animal_eval_annotation_filter',
+                           dest='coco_eval_annotation_filter',
                            default=True, action='store_false')
         group.add_argument('--animal-eval-long-edge', default=cls.eval_long_edge, type=int,
-                           dest='animal_eval_long_edge', help='set to zero to deactivate rescaling')
+                           dest='coco_eval_long_edge', help='set to zero to deactivate rescaling')
         assert not cls.eval_extended_scale
         group.add_argument('--animal-eval-extended-scale', default=False, action='store_true',
-                           dest='animal_eval_extended_scale',)
+                           dest='coco_eval_extended_scale',)
         group.add_argument('--animal-eval-orientation-invariant',
                            default=cls.eval_orientation_invariant, type=float,
-                           dest='animal_eval_orientation_invariant')
+                           dest='coco_eval_orientation_invariant')
 
     @classmethod
     def configure(cls, args: argparse.Namespace):
@@ -173,19 +156,27 @@ class AnimalKp(DataModule):
         cls.b_min = args.animal_bmin
 
         # evaluation
-        cls.eval_annotation_filter = args.animal_eval_annotation_filter
-        cls.eval_long_edge = args.animal_eval_long_edge
-        cls.eval_orientation_invariant = args.animal_eval_orientation_invariant
-        cls.eval_extended_scale = args.animal_eval_extended_scale
+        cls.eval_annotation_filter = args.coco_eval_annotation_filter  # the destination is for coco
+        if args.animal_eval_test2017:
+            cls.eval_image_dir = cls._test2017_image_dir
+            cls.eval_annotations = cls._test2017_annotations
+            cls.annotation_filter = False
+        if args.animal_eval_testdev2017:
+            cls.eval_image_dir = cls._test2017_image_dir
+            cls.eval_annotations = cls._testdev2017_annotations
+            cls.annotation_filter = False
+        cls.eval_long_edge = args.coco_eval_long_edge
+        cls.eval_orientation_invariant = args.coco_eval_orientation_invariant
+        cls.eval_extended_scale = args.coco_eval_extended_scale
 
-        if (args.animal_eval_test2017 or args.animal_eval_testdev2017) \
-                and not args.write_predictions \
-                and not args.debug:
+        if (args.cocokp_eval_test2017 or args.cocokp_eval_testdev2017) \
+            and not args.write_predictions and not args.debug:
             raise Exception('have to use --write-predictions for this dataset')
 
     def _preprocess(self):
-        encoders = (encoder.Cif(self.head_metas[0], bmin=self.b_min),
-                    encoder.Caf(self.head_metas[1], bmin=self.b_min))
+        encoders = (encoder.Cif(self.head_metas[0],
+                                bmin=self.b_min),
+                    encoder.Caf(self.head_metas[1]))
 
         if not self.augmentation:
             return transforms.Compose([
@@ -198,35 +189,39 @@ class AnimalKp(DataModule):
 
         if self.extended_scale:
             rescale_t = transforms.RescaleRelative(
-                scale_range=(0.2 * self.rescale_images,
-                             2.5 * self.rescale_images),
+                scale_range=(0.25 * self.rescale_images,
+                             2.0 * self.rescale_images),
                 power_law=True, stretch_range=(0.75, 1.33))
         else:
             rescale_t = transforms.RescaleRelative(
-                scale_range=(0.3 * self.rescale_images,
+                scale_range=(0.4 * self.rescale_images,
                              2.0 * self.rescale_images),
                 power_law=True, stretch_range=(0.75, 1.33))
 
+        blur_t = None
+        if self.blur:
+            blur_t = transforms.RandomApply(transforms.Blur(), self.blur)
+
+        orientation_t = None
+        if self.orientation_invariant:
+            orientation_t = transforms.RandomApply(
+                transforms.RotateBy90(), self.orientation_invariant)
+
         return transforms.Compose([
             transforms.NormalizeAnnotations(),
-            transforms.RandomApply(
-                transforms.HFlip(ANIMAL_KEYPOINTS, HFLIP), 0.5),
+            transforms.AnnotationJitter(),
+            transforms.RandomApply(transforms.HFlip(ANIMAL_KEYPOINTS, HFLIP), 0.5),
             rescale_t,
-            transforms.RandomApply(
-                transforms.Blur(), self.blur),
-            transforms.RandomChoice(
-                [transforms.RotateBy90(),
-                 transforms.RotateUniform(30.0)],
-                [self.orientation_invariant, 0.4],
-            ),
+            blur_t,
             transforms.Crop(self.square_edge, use_area_of_interest=True),
             transforms.CenterPad(self.square_edge),
+            orientation_t,
             transforms.TRAIN_TRANSFORM,
             transforms.Encoders(encoders),
         ])
 
     def train_loader(self):
-        train_data = CocoLoader(
+        train_data = Animal(
             image_dir=self.train_image_dir,
             ann_file=self.train_annotations,
             preprocess=self._preprocess(),
@@ -240,7 +235,7 @@ class AnimalKp(DataModule):
             collate_fn=collate_images_targets_meta)
 
     def val_loader(self):
-        val_data = CocoLoader(
+        val_data = Animal(
             image_dir=self.val_image_dir,
             ann_file=self.val_annotations,
             preprocess=self._preprocess(),
@@ -304,10 +299,11 @@ class AnimalKp(DataModule):
         ])
 
     def eval_loader(self):
-        eval_data = CocoLoader(
+        eval_data = Animal(
             image_dir=self.eval_image_dir,
             ann_file=self.eval_annotations,
             preprocess=self._eval_preprocess(),
+            n_images=self.n_images,
             annotation_filter=self.eval_annotation_filter,
             min_kp_anns=self.min_kp_anns if self.eval_annotation_filter else 0,
             category_ids=[1] if self.eval_annotation_filter else [],
@@ -319,7 +315,7 @@ class AnimalKp(DataModule):
 
     def metrics(self):
         return [metric.Coco(
-            COCO(self.eval_annotations),
+            pycocotools.coco.COCO(self.eval_annotations),
             max_per_image=20,
             category_ids=[1],
             iou_type='keypoints',

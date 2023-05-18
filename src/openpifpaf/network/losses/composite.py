@@ -19,6 +19,12 @@ class CompositeLossByComponent(torch.nn.Module):
         super().__init__()
         self.n_vectors = head_meta.n_vectors
         self.n_scales = head_meta.n_scales
+        print("in composite")
+        print("nvectors")
+        print(self.n_vectors)
+        print("nscales")
+        print(self.n_scales)
+        print("")
 
         LOG.debug('%s: n_vectors = %d, n_scales = %d',
                   head_meta.name, self.n_vectors, self.n_scales)
@@ -244,6 +250,16 @@ class CompositeLoss(torch.nn.Module):
     # pylint: disable=too-many-statements
     def forward(self, x, t):
         LOG.debug('loss for %s', self.field_names)
+        print("in composite")
+        print("nvectors")
+        print(self.n_vectors)
+        print("nscales")
+        print(self.n_scales)
+        print("nconfidence")
+        print(self.n_confidences)
+        print("x shape")
+        print(x.shape[2])
+        print("")
 
         if t is None:
             return [None, None, None]

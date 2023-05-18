@@ -7,9 +7,13 @@ def main():
     # List of all the annotation types that should be used
     ann_types = ["keypoints", "foot_kpts", "face_kpts", "lefthand_kpts", "righthand_kpts"]
 
-    orig_file = "../../data-mscoco/annotations_wholebody/coco_wholebody_train_v1.0.json"
-    new_file = "../../data-mscoco/annotations/"
-    "final_person_keypoints_train2017_wholebody_pifpaf_style.json"
+    #processing training values
+    #orig_file = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\coco_wholebody_train_v1.0.json"
+    #new_file = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\annotations\\final_person_keypoints_train2017_wholebody_pifpaf_style.json"
+
+    #processing evaluation values
+    orig_file = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\coco_wholebody_val_v1.0.json"
+    new_file = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\annotations\\final_person_keypoints_val2017_wholebody_pifpaf_style.json"
 
     # =============================================================================
     # orig_file = "../../data-mscoco/annotations_wholebody/coco_wholebody_val_v1.0.json"

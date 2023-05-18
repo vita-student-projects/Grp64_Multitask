@@ -30,12 +30,10 @@ class Wholebody(openpifpaf.datasets.DataModule):
     # Coco wholebody has no test dataset
 
     # cli configurable
-    train_annotations = ('data-mscoco/annotations/'
-                         'person_keypoints_train2017_wholebody_pifpaf_style.json')
-    val_annotations = ('data-mscoco/annotations/'
-                       'coco_wholebody_val_v1.0.json')
-    train_image_dir = 'data-mscoco/images/train2017/'
-    val_image_dir = 'data-mscoco/images/val2017'
+    train_annotations = ("C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\annotations\\person_keypoints_train2017_wholebody_pifpaf_style.json")
+    val_annotations = ("C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\annotations\\person_keypoints_val2017_wholebody_pifpaf_style.json")
+    train_image_dir = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\images\\train2017"
+    val_image_dir = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\images\\val2017"
 
     square_edge = 385
     extended_scale = False

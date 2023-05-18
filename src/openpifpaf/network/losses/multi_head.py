@@ -25,9 +25,20 @@ class MultiHeadLoss(torch.nn.Module):
     def forward(self, head_fields, head_targets):  # pylint: disable=arguments-differ
         assert len(self.losses) == len(head_fields)
         assert len(self.losses) <= len(head_targets)
+        print("in loss multihead")
+        print("losses")
+        print(self.losses)
+        print("head fields")
+        print(len(head_fields))
+        print("head targets")
+        print(len(head_targets))
+        print("printing where error")
+        print("zip")
+        print(zip(head_fields))
         assert self.task_sparsity_weight == 0.0  # TODO implement
         flat_head_losses = [ll
                             for l, f, t in zip(self.losses, head_fields, head_targets)
+                            #for ll in (print("printing f",f.shape[1],f.shape[2]),l(f, t))]
                             for ll in l(f, t)]
 
         assert len(self.lambdas) == len(flat_head_losses)

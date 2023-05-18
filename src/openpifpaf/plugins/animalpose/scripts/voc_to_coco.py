@@ -38,9 +38,9 @@ def dataset_mappings():
 def cli():
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--dir_data', default='data-animalpose',
+    parser.add_argument('--dir_data', default='C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose',
                         help='dataset directory')
-    parser.add_argument('--dir_out', default='data-animalpose',
+    parser.add_argument('--dir_out', default='C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single-pifpaf',
                         help='where to save xml annotations and output json ')
     parser.add_argument('--sample', action='store_true',
                         help='Whether to only process the first 50 images')
@@ -89,7 +89,9 @@ class VocToCoco:
         for phase in ('train', 'val'):
             metadata = splits[phase]
             if self.sample:
-                metadata = metadata[:50]
+                #metadata = metadata[:50]
+                #trying with only 2 images
+                metadata = metadata[:2]
             cnt_images = 0
             cnt_instances = 0
             self.cnt_kps = [0] * len(ANIMAL_KEYPOINTS)
@@ -227,7 +229,8 @@ class VocToCoco:
         """
         Initiate Json for training and val phase
         """
-        self.json_file["info"] = dict(url="https://github.com/vita-epfl/openpifpaf",
+        #self.json_file["info"] = dict(url="https://github.com/vita-epfl/openpifpaf",
+        self.json_file["info"] = dict(url="https://github.com/openpifpaf/openpifpaf",
                                       date_created=time.strftime(
                                           "%a, %d %b %Y %H:%M:%S +0000", time.localtime()),
                                       description="Animalpose dataset with MS-COCO format")

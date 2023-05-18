@@ -34,9 +34,9 @@ from .transforms import skeleton_mapping
 def cli():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--dir_data', default='data-apollocar3d/train',
+    parser.add_argument('--dir_data', default="C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-apollocar3d\\train",
                         help='dataset directory')
-    parser.add_argument('--dir_out', default='data-apollocar3d',
+    parser.add_argument('--dir_out', default="C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-apollocar3d-single",
                         help='where to save annotations and files')
     parser.add_argument('--sample', action='store_true',
                         help='Whether to only process the first 50 images')

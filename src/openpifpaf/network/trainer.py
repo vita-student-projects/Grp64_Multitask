@@ -155,8 +155,13 @@ class Trainer():
             if hasattr(val_scenes.sampler, 'set_epoch'):
                 val_scenes.sampler.set_epoch(epoch)
 
+            print("train_scenes")
+            print(len(train_scenes))
+            print("epoch")
+            print(epoch)
+            print("")
             self.train(train_scenes, epoch)
-
+            
             if (epoch + 1) % self.val_interval == 0 \
                or epoch + 1 == self.epochs:
                 self.write_model(epoch + 1, epoch + 1 == self.epochs)
@@ -177,9 +182,27 @@ class Trainer():
         # train encoder
         with torch.autograd.profiler.record_function('model'):
             outputs = self.model(data, head_mask=[t is not None for t in targets])
+            print("data")
+            print(data.size())
+            print(len(data[1][0][0]))
+            print("model")
+            print(type(self.model))
+            #print(self.model)
+            print("head masks")
+            print([t is not None for t in targets[1][0][0]])
+            print(type([t is not None for t in targets]))
             if self.train_profile and self.device.type != 'cpu':
                 torch.cuda.synchronize()
         with torch.autograd.profiler.record_function('loss'):
+            #from this i know the issue is in outputs and in the targets, ehre tho ?
+            print("in trainer")
+            print("printing self.loss")
+            print("printing outputs")
+            print(len(outputs[1][0][0]))
+            print("printing targets")
+            print(len(targets[1][0][0]))
+            #print(self.loss(outputs,targets))
+            print("")
             loss, head_losses = self.loss(outputs, targets)
             if self.train_profile and self.device.type != 'cpu':
                 torch.cuda.synchronize()
@@ -286,11 +309,24 @@ class Trainer():
         head_epoch_counts = None
         last_batch_end = time.time()
         self.optimizer.zero_grad()
+        #problem is coming from the scenes
+        print("in train fct")
+        print("scenes")
+        print(type(scenes))
+        #print(scenes)
         for batch_idx, (data, target, _) in enumerate(scenes):
+            print("printing what in scenes")
+            print("batch_idx")
+            print(batch_idx)
+            print("target")
+           #print(target)
             preprocess_time = time.time() - last_batch_end
 
             batch_start = time.time()
             apply_gradients = batch_idx % self.stride_apply == 0
+            print("in batch idx")
+            print("printing targets")
+            print(len(target[1][0][0]))
             loss, head_losses = self.train_batch(data, target, apply_gradients)
 
             # update epoch accumulates
