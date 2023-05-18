@@ -19,12 +19,12 @@ class CompositeLossByComponent(torch.nn.Module):
         super().__init__()
         self.n_vectors = head_meta.n_vectors
         self.n_scales = head_meta.n_scales
-        print("in composite")
-        print("nvectors")
-        print(self.n_vectors)
-        print("nscales")
-        print(self.n_scales)
-        print("")
+        #print("in composite")
+        #print("nvectors")
+        #print(self.n_vectors)
+        #print("nscales")
+        #print(self.n_scales)
+        #print("")
 
         LOG.debug('%s: n_vectors = %d, n_scales = %d',
                   head_meta.name, self.n_vectors, self.n_scales)
