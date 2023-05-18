@@ -41,8 +41,8 @@ class AnimalKp(DataModule):
     #val_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\annotations\\animal_keypoints_20_sample_val.json'
 
     #for training on scitas
-    train_annotations = '/work/scitas-share/datasets/Vita/civil-459/animalpose/annotations/animal_keypoints_20_sample_train.json'
-    val_annotations = '/work/scitas-share/datasets/Vita/civil-459/animalpose/annotations/animal_keypoints_20_sample_val.json'
+    train_annotations = '/work/scitas-share/datasets/Vita/civil-459/animalpose/annotations/animal_keypoints_20_train.json'
+    val_annotations = '/work/scitas-share/datasets/Vita/civil-459/animalpose/annotations/animal_keypoints_20_val.json'
     eval_annotations = val_annotations
 
     #training with all images
