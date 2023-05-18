@@ -155,11 +155,11 @@ class Trainer():
             if hasattr(val_scenes.sampler, 'set_epoch'):
                 val_scenes.sampler.set_epoch(epoch)
 
-            print("train_scenes")
-            print(len(train_scenes))
-            print("epoch")
-            print(epoch)
-            print("")
+            #print("train_scenes")
+            #print(len(train_scenes))
+            #print("epoch")
+            #print(epoch)
+            #print("")
             self.train(train_scenes, epoch)
             
             if (epoch + 1) % self.val_interval == 0 \
@@ -182,15 +182,14 @@ class Trainer():
         # train encoder
         with torch.autograd.profiler.record_function('model'):
             outputs = self.model(data, head_mask=[t is not None for t in targets])
-            print("data")
-            print(data.size())
-            print(len(data[1][0][0]))
-            print("model")
-            print(type(self.model))
+            #print("data")
+            #print(data.size())
+            #print(len(data[1][0][0]))
+            #print("model")
+            #print(type(self.model))
             #print(self.model)
-            print("head masks")
-            print([t is not None for t in targets[1][0][0]])
-            print(type([t is not None for t in targets]))
+            #print("head masks")
+            #print([t is not None for t in targets[1][0][0]])
             if self.train_profile and self.device.type != 'cpu':
                 torch.cuda.synchronize()
         with torch.autograd.profiler.record_function('loss'):
@@ -201,7 +200,7 @@ class Trainer():
             print(len(outputs[1][0][0]))
             print("printing targets")
             print(len(targets[1][0][0]))
-            #print(self.loss(outputs,targets))
+            print(self.loss(outputs,targets))
             print("")
             loss, head_losses = self.loss(outputs, targets)
             if self.train_profile and self.device.type != 'cpu':

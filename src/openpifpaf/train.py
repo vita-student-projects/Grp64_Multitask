@@ -146,9 +146,9 @@ def main():
     args = cli()
 
     datamodule = datasets.factory(args.dataset)
-    print("in main train")
-    print("head metas")
-    print(len(datamodule.head_metas))
+    #print("in main train")
+    #print("head metas")
+    #print(len(datamodule.head_metas))
 
     net_cpu, start_epoch = network.Factory().factory(head_metas=datamodule.head_metas)
     loss = network.losses.Factory().factory(datamodule.head_metas)
@@ -189,8 +189,8 @@ def main():
 
     logger.train_configure(args)
     train_loader = datamodule.train_loader()
-    print("train loader in main")
-    print(datamodule.train_loader)
+    #print("train loader in main")
+    #print(datamodule.train_loader)
     val_loader = datamodule.val_loader()
     if torch.distributed.is_initialized():
         train_loader = datamodule.distributed_sampler(train_loader)

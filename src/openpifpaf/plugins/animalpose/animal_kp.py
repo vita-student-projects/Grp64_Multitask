@@ -37,8 +37,12 @@ class AnimalKp(DataModule):
     #val_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-sample\\annotations\\animal_keypoints_20_sample_val.json'
 
     #for training with 2 images
-    train_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\annotations\\animal_keypoints_20_sample_train.json'
-    val_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\annotations\\animal_keypoints_20_sample_val.json'
+    #train_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\annotations\\animal_keypoints_20_sample_train.json'
+    #val_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\annotations\\animal_keypoints_20_sample_val.json'
+
+    #for training on scitas
+    train_annotations = '/work/scitas-share/datasets/Vita/civil-459/animalpose/annotations/animal_keypoints_20_sample_train.json'
+    val_annotations = '/work/scitas-share/datasets/Vita/civil-459/animalpose/annotations/animal_keypoints_20_sample_val.json'
     eval_annotations = val_annotations
 
     #training with all images
@@ -50,8 +54,12 @@ class AnimalKp(DataModule):
     #val_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-sample\\images\\val'
 
     #training with two images
-    train_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\images\\train'
-    val_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\images\\val'
+    #train_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\images\\train'
+    #val_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-single\\images\\val'
+
+    #training on scitas
+    train_image_dir = '/work/scitas-share/datasets/Vita/civil-459/animalpose/images/train'
+    val_image_dir = '/work/scitas-share/datasets/Vita/civil-459/animalpose/images/val'
     eval_image_dir = val_image_dir
 
     n_images = None
