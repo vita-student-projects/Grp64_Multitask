@@ -36,8 +36,8 @@ class CocoKp(openpifpaf.datasets.DataModule, openpifpaf.Configurable):
 
     # cli configurable
     #testing wholebody on scitas
-    train_annotations = '/work/scitas-share/datasets/Vita/civil-459/wholebody_annotations/person_keypoints_train2017.json'
-    val_annotations = '/work/scitas-share/datasets/Vita/civil-459/wholebody_annotations/person_keypoints_val2017.json'
+    train_annotations = '/work/scitas-share/datasets/Vita/civil-459/data-coco/annotations/person_keypoints_train2017.json'
+    val_annotations = '/work/scitas-share/datasets/Vita/civil-459/data-coco/annotations/person_keypoints_val2017.json'
     #testing cocokp on my computer
     #train_annotations = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\annotations\\person_keypoints_train2017.json"
     #val_annotations = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\annotations\\person_keypoints_val2017.json"
