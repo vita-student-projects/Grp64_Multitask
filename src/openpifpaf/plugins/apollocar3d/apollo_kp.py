@@ -28,12 +28,19 @@ class ApolloKp(DataModule):
     """
     DataModule for the Apollocar3d Dataset.
     """
-
-    train_annotations = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-apollocar3d-sample\\annotations\\apollo_keypoints_66_sample_train.json"
-    val_annotations = "C:\\Users\\willi\\OneDrive\\Documents\datasets\\data-apollocar3d-sample\\annotations\\apollo_keypoints_66_sample_val.json"
+    #Train with sample
+    #train_annotations = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-apollocar3d-sample\\annotations\\apollo_keypoints_66_sample_train.json"
+    #val_annotations = "C:\\Users\\willi\\OneDrive\\Documents\datasets\\data-apollocar3d-sample\\annotations\\apollo_keypoints_66_sample_val.json"
+    #Train on scitas
+    train_annotations = '/work/scitas-share/datasets/Vita/civil-459/data-apollocar3d/annotations/apollo_keypoints_66_train.json'
+    val_annotations = '/work/scitas-share/datasets/Vita/civil-459/data-apollocar3d/annotations/apollo_keypoints_66_val.json'
     eval_annotations = val_annotations
-    train_image_dir = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-apollocar3d-sample\\images\\train"
-    val_image_dir = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-apollocar3d-sample\\images\\val"
+    #Training with sampels
+    #train_image_dir = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-apollocar3d-sample\\images\\train"
+    #val_image_dir = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-apollocar3d-sample\\images\\val"
+    #Training on Scitas
+    train_image_dir = '/work/scitas-share/datasets/Vita/civil-459/data-apollocar3d/images/train'
+    val_image_dir = '/work/scitas-share/datasets/Vita/civil-459/data-apollocar3d/images/val'
     eval_image_dir = val_image_dir
 
     n_images = None

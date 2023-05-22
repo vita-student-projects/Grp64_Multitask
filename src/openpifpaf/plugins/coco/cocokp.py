@@ -25,16 +25,30 @@ except ImportError:
 
 
 class CocoKp(openpifpaf.datasets.DataModule, openpifpaf.Configurable):
+    #testing on scitas
     _test2017_annotations = '/work/scitas-share/datasets/Vita/civil-459/data-coco/annotations/image_info_test2017.json'
     _testdev2017_annotations = '/work/scitas-share/datasets/Vita/civil-459/data-coco/annotations/image_info_test-dev2017.json'
     _test2017_image_dir = '/work/scitas-share/datasets/Vita/civil-459/data-coco/images/test2017/'
+    #testing on my comp
+    #_test2017_annotations = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\annotations\\image_info_test2017.json"
+    #_testdev2017_annotations = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\annotations\\image_info_test-dev2017.json"
+    #_test2017_image_dir = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\images\\test2017"
 
     # cli configurable
-    train_annotations = '/work/scitas-share/datasets/Vita/civil-459/wholebody_annotations/person_keypoints_train2017_wholebody_pifpaf_style.json'
-    val_annotations = '/work/scitas-share/datasets/Vita/civil-459/wholebody_annotations/person_keypoints_val2017_wholebody_pifpaf_style.json'
+    #testing wholebody on scitas
+    train_annotations = '/work/scitas-share/datasets/Vita/civil-459/wholebody_annotations/person_keypoints_train2017.json'
+    val_annotations = '/work/scitas-share/datasets/Vita/civil-459/wholebody_annotations/person_keypoints_val2017.json'
+    #testing cocokp on my computer
+    #train_annotations = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\annotations\\person_keypoints_train2017.json"
+    #val_annotations = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\annotations\\person_keypoints_val2017.json"
     eval_annotations = val_annotations
+
+    #training on scitas
     train_image_dir = '/work/scitas-share/datasets/Vita/civil-459/data-coco/images/train2017/'
     val_image_dir = '/work/scitas-share/datasets/Vita/civil-459/data-coco/images/val2017/'
+    #training on my computer
+    #train_image_dir = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\images\\train2017"
+    #val_image_dir = "C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-mscoco\\images\\val2017"
     eval_image_dir = val_image_dir
 
     square_edge = 385

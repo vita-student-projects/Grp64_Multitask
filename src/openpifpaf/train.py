@@ -146,9 +146,13 @@ def main():
     args = cli()
 
     datamodule = datasets.factory(args.dataset)
-    #print("in main train")
-    #print("head metas")
-    #print(len(datamodule.head_metas))
+    print("in main train")
+    print("dataset")
+    print(args.dataset)
+    print("datamodule")
+    print(datamodule)
+    print("head metas")
+    print(len(datamodule.head_metas))
 
     net_cpu, start_epoch = network.Factory().factory(head_metas=datamodule.head_metas)
     loss = network.losses.Factory().factory(datamodule.head_metas)
@@ -216,6 +220,8 @@ def main():
             'hostname': socket.gethostname(),
         },
     )
+    print("train_loader")
+    print(train_loader)
     trainer.loop(train_loader, val_loader, start_epoch=start_epoch)
 
 

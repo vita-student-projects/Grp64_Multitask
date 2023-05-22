@@ -250,6 +250,7 @@ class CompositeLoss(torch.nn.Module):
     # pylint: disable=too-many-statements
     def forward(self, x, t):
         LOG.debug('loss for %s', self.field_names)
+        '''
         print("in composite")
         print("nvectors")
         print(self.n_vectors)
@@ -257,9 +258,13 @@ class CompositeLoss(torch.nn.Module):
         print(self.n_scales)
         print("nconfidence")
         print(self.n_confidences)
+        print("x")
+        print(type(x))
+        #print(x)
         print("x shape")
-        print(x.shape[2])
+        #print(x.shape[2])
         print("")
+        '''
 
         if t is None:
             return [None, None, None]

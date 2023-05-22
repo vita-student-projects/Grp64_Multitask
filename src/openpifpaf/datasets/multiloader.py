@@ -51,6 +51,8 @@ class MultiLoader:
             self.n_batches = min(self.n_batches, n_batches)
 
     def __iter__(self):
+        #print("length loaders")
+        #print(len(self.loaders))
         loader_iters = [iter(l) for l in self.loaders]
         n_loaded = [0 for _ in self.loaders]
         while True:

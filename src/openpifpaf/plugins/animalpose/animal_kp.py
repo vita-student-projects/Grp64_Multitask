@@ -43,6 +43,10 @@ class AnimalKp(DataModule):
     #for training on scitas
     train_annotations = '/work/scitas-share/datasets/Vita/civil-459/animalpose/annotations/animal_keypoints_20_train.json'
     val_annotations = '/work/scitas-share/datasets/Vita/civil-459/animalpose/annotations/animal_keypoints_20_val.json'
+
+    #trying to have the same images as eval and training sets:
+    #train_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-sample\\annotations\\animal_keypoints_20_sample_train.json'
+    #val_annotations = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-sample\\annotations\\animal_keypoints_20_sample_train.json'
     eval_annotations = val_annotations
 
     #training with all images
@@ -60,6 +64,10 @@ class AnimalKp(DataModule):
     #training on scitas
     train_image_dir = '/work/scitas-share/datasets/Vita/civil-459/animalpose/images/train'
     val_image_dir = '/work/scitas-share/datasets/Vita/civil-459/animalpose/images/val'
+
+    #trying to have the same images as eval and training sets:
+    #train_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-sample\\images\\train'
+    #val_image_dir = 'C:\\Users\\willi\\OneDrive\\Documents\\datasets\\data-animalpose-sample\\images\\train'
     eval_image_dir = val_image_dir
 
     n_images = None
