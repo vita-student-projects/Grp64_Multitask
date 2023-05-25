@@ -6,11 +6,12 @@ import hashlib
 import logging
 import shutil
 import time
-import numpy as np 
+
+############################################################################################################
+import math
+############################################################################################################
 
 import torch
-
-import math
 
 from ..profiler import TorchProfiler
 
@@ -47,17 +48,19 @@ class Trainer():
         self.device = device
         self.model_meta_data = model_meta_data
 
+        ################################################################################################################################################
+        #Adding a list to save previous head losses
+        self.head_loss_array = []
+        self.K = 1 #arbitrary
+        self.T = 2 #arbitrary
+        self.start_epoch = -1
+        ################################################################################################################################################
+
         self.ema = None
         self.ema_restore_params = None
 
         self.n_clipped_grad = 0
         self.max_norm = 0.0
-
-        self.head_loss_array = []
-        self.avg_loss = []
-        self.K = 1 #arbitrary or number of heads ?
-        self.T = 2 #arbitrary
-        self.start_epoch = -1 
 
         if self.train_profile and (not torch.distributed.is_initialized()
                                    or torch.distributed.get_rank() == 0):
@@ -156,7 +159,6 @@ class Trainer():
         if self.lr_scheduler is not None:
             assert self.lr_scheduler.last_epoch == start_epoch * len(train_scenes)
 
-        loss_avg = []
         for epoch in range(start_epoch, self.epochs):
             if epoch == 0:
                 self.write_model(0, final=False)
@@ -165,8 +167,13 @@ class Trainer():
             if hasattr(val_scenes.sampler, 'set_epoch'):
                 val_scenes.sampler.set_epoch(epoch)
 
+            #print("train_scenes")
+            #print(len(train_scenes))
+            #print("epoch")
+            #print(epoch)
+            #print("")
             self.train(train_scenes, epoch)
-
+            
             if (epoch + 1) % self.val_interval == 0 \
                or epoch + 1 == self.epochs:
                 self.write_model(epoch + 1, epoch + 1 == self.epochs)
@@ -187,10 +194,34 @@ class Trainer():
         # train encoder
         with torch.autograd.profiler.record_function('model'):
             outputs = self.model(data, head_mask=[t is not None for t in targets])
+            #print("data")
+            #print(data.size())
+            #print(len(data[1][0][0]))
+            #print("model")
+            #print(type(self.model))
+            #print(self.model)
+            #print("head masks")
+            #print([t is not None for t in targets[1][0][0]])
             if self.train_profile and self.device.type != 'cpu':
                 torch.cuda.synchronize()
         with torch.autograd.profiler.record_function('loss'):
+            #from this i know the issue is in outputs and in the targets, ehre tho ?
+            #print("in trainer")
+            #print("printing self.loss")
+            #print("printing outputs")
+            #print(len(outputs[1][0][0]))
+            #print("printing targets")
+            #print(len(targets[1][0][0]))
+            #print(self.loss(outputs,targets))
+            #print("")
             loss, head_losses = self.loss(outputs, targets)
+            #print("self loss")
+            #print(self.loss(outputs, targets))
+            ###############################################################################################################################################################
+            #This is where I should really change the losses right ? To have it fully accounted for in the backward propagation ?
+
+            ###############################################################################################################################################################
+            
             if self.train_profile and self.device.type != 'cpu':
                 torch.cuda.synchronize()
         if loss is not None:
@@ -291,56 +322,91 @@ class Trainer():
         self.ema_restore()
         self.ema = None
 
-        
-
-        if self.start_epoch == -1:
-                self.start_epoch = epoch
-
-        if epoch-self.start_epoch == 1 or epoch-self.start_epoch == 0: #or epoch-self.start_epoch == 0:
-            lambda_dwa = [1]*6
-        else:
-            #print(epoch-self.start_epoch)
-            #print("avg loss")
-            #print(self.avg_loss)
-            w = [loss1/loss2 for loss1, loss2 in zip(self.avg_loss[epoch-self.start_epoch-1], self.avg_loss[epoch-self.start_epoch-2])]
-            #print("weights")
-            #print(w)
-            exp = [math.exp(weights/self.T) for weights in w]
-            #print("exo")
-            #print(exp)
-            lambda_dwa = [self.K*exp1/sum(exp) for exp1 in exp]
-            #print("lambda")
-            #print(lambda_dwa)
-
         epoch_loss = 0.0
         head_epoch_losses = None
         head_epoch_counts = None
         last_batch_end = time.time()
         self.optimizer.zero_grad()
+        #problem is coming from the scenes
+        #print("in train fct")
+        #print("scenes")
+        #print(type(scenes))
+        #print(scenes)
         for batch_idx, (data, target, _) in enumerate(scenes):
-            apply_gradients = batch_idx % self.stride_apply == 0
-            # loss, head_losses = self.train_batch(data, target, apply_gradients)
-            _, head_losses = self.train_batch(data, target, apply_gradients)
-            if batch_idx == 0:
-                self.avg_loss.append(head_losses)
+            #print("printing what in scenes")
+            #print("batch_idx")
+            #print(batch_idx)
+            #print("target")
+            #print(target)
             preprocess_time = time.time() - last_batch_end
-            size_batch = len(data)
+
             batch_start = time.time()
+            apply_gradients = batch_idx % self.stride_apply == 0
+            #print("in batch idx")
+            #print("printing targets")
+            #print(len(target[1][0][0]))
+            loss, head_losses = self.train_batch(data, target, apply_gradients)
             #print("head losses")
-            #print(head_losses)
-            #print(lambda_dwa)
-            new_head_losses = [(a*b) for a,b in zip(lambda_dwa, head_losses)]
-            loss = sum(new_head_losses)
+            #print(type(head_losses))
+            #print(len(head_losses))
+
+            ########################################################################################################################################################################
+            #Here is where I have access to losses of this batch, do I do DWA on every batch ?
             self.head_loss_array.append(head_losses)
-            #lambda_dwa = []
-            #print(head_losses)
-            #[sum(x) for x in zip(list1, list2)]
-            norm_head_losses = [x/size_batch for x in head_losses]
-            self.avg_loss[epoch-self.start_epoch] = [a+b for a,b in zip(self.avg_loss[epoch-self.start_epoch], norm_head_losses)]
-            
+            lambda_head_indexing = []
+            new_loss = 0
+            #print("appended head losses")
+            #print(self.head_loss_array)
+
+            if self.start_epoch == -1:
+                print("first epoch")
+                print(epoch)
+                self.start_epoch = epoch
+            #print("epoch")
+            #print(epoch)
+            #print(self.start_epoch)
+            #Implementing Dynamic Weight Average
+            if epoch <= self.start_epoch+2:
+                pass
+            else:
+                #print("in DWA")
+                prevWeight = [a/b for a,b in zip(self.head_loss_array[epoch-self.start_epoch-1],self.head_loss_array[epoch-self.start_epoch-2])]
+                a = [math.exp(x/self.T) for x in prevWeight]
+                b = sum(a) 
+                lambda_head_indexing = [self.K*x/b for x in a]
+                #print("lambda head indexing ")
+                #print(lambda_head_indexing)
+                #print("prevWeight")
+                #print(prevWeight)
+            if len(lambda_head_indexing):
+                new_loss = sum([a*b for a,b in zip(lambda_head_indexing,head_losses)])
+                '''
+                print("")
+                print("")
+                print("")
+                print("New loss")
+                print(new_loss)
+                print("old loss")
+                print(loss)
+                print("new head losses")
+                print([a*b for a,b in zip(lambda_head_indexing,head_losses)])
+                print("hold head losses")
+                print(head_losses)
+                print("")
+                print("")
+                print("")
+                '''
+            ########################################################################################################################################################################
+
             # update epoch accumulates
             if loss is not None:
-                epoch_loss += loss
+                if new_loss:
+                    print("using new loss")
+                    #epoch_loss += new_loss
+                    #loss = new_loss
+                    epoch_loss += loss
+                else:
+                    epoch_loss += loss
             if head_epoch_losses is None:
                 head_epoch_losses = [0.0 for _ in head_losses]
                 head_epoch_counts = [0 for _ in head_losses]
