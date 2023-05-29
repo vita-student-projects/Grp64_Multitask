@@ -329,7 +329,7 @@ class Trainer():
             #print("head losses")
             #print(head_losses)
             #print(lambda_dwa)
-            new_head_losses = [(a*b) for a,b in zip(lambda_dwa, head_losses)]
+            new_head_losses = [(a*b) if a and b is not None else 0 for a,b in zip(lambda_dwa, head_losses)]
             loss = sum(new_head_losses)
             self.head_loss_array.append(head_losses)
             #lambda_dwa = []
