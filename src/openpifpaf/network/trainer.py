@@ -335,7 +335,7 @@ class Trainer():
             #lambda_dwa = []
             #print(head_losses)
             #[sum(x) for x in zip(list1, list2)]
-            norm_head_losses = [x/size_batch for x in head_losses]
+            norm_head_losses = [x/size_batch if x is not None else 0 for x in head_losses]
             self.avg_loss[epoch-self.start_epoch] = [a+b for a,b in zip(self.avg_loss[epoch-self.start_epoch], norm_head_losses)]
             
             # update epoch accumulates
