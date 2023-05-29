@@ -6,11 +6,8 @@ import hashlib
 import logging
 import shutil
 import time
-import numpy as np 
 
 import torch
-
-import math
 
 from ..profiler import TorchProfiler
 
@@ -52,12 +49,6 @@ class Trainer():
 
         self.n_clipped_grad = 0
         self.max_norm = 0.0
-
-        self.head_loss_array = []
-        self.avg_loss = []
-        self.K = 1 #arbitrary or number of heads ?
-        self.T = 2 #arbitrary
-        self.start_epoch = -1 
 
         if self.train_profile and (not torch.distributed.is_initialized()
                                    or torch.distributed.get_rank() == 0):
@@ -156,7 +147,6 @@ class Trainer():
         if self.lr_scheduler is not None:
             assert self.lr_scheduler.last_epoch == start_epoch * len(train_scenes)
 
-        loss_avg = []
         for epoch in range(start_epoch, self.epochs):
             if epoch == 0:
                 self.write_model(0, final=False)
@@ -291,53 +281,18 @@ class Trainer():
         self.ema_restore()
         self.ema = None
 
-        
-
-        if self.start_epoch == -1:
-                self.start_epoch = epoch
-
-        if epoch-self.start_epoch == 1 or epoch-self.start_epoch == 0: #or epoch-self.start_epoch == 0:
-            lambda_dwa = [1]*6
-        else:
-            #print(epoch-self.start_epoch)
-            #print("avg loss")
-            #print(self.avg_loss)
-            w = [loss1/loss2 for loss1, loss2 in zip(self.avg_loss[epoch-self.start_epoch-1], self.avg_loss[epoch-self.start_epoch-2])]
-            print("weights")
-            print(w)
-            exp = [math.exp(weights/self.T) for weights in w]
-            #print("exo")
-            #print(exp)
-            lambda_dwa = [self.K*exp1/sum(exp) for exp1 in exp]
-            #print("lambda")
-            #print(lambda_dwa)
-
         epoch_loss = 0.0
         head_epoch_losses = None
         head_epoch_counts = None
         last_batch_end = time.time()
         self.optimizer.zero_grad()
         for batch_idx, (data, target, _) in enumerate(scenes):
-            apply_gradients = batch_idx % self.stride_apply == 0
-            # loss, head_losses = self.train_batch(data, target, apply_gradients)
-            _, head_losses = self.train_batch(data, target, apply_gradients)
-            if batch_idx == 0:
-                self.avg_loss.append(head_losses)
             preprocess_time = time.time() - last_batch_end
-            size_batch = len(data)
+
             batch_start = time.time()
-            #print("head losses")
-            #print(head_losses)
-            #print(lambda_dwa)
-            new_head_losses = [(a*b) for a,b in zip(lambda_dwa, head_losses)]
-            loss = sum(new_head_losses)
-            self.head_loss_array.append(head_losses)
-            #lambda_dwa = []
-            #print(head_losses)
-            #[sum(x) for x in zip(list1, list2)]
-            norm_head_losses = [x/size_batch for x in head_losses]
-            self.avg_loss[epoch-self.start_epoch] = [a+b for a,b in zip(self.avg_loss[epoch-self.start_epoch], norm_head_losses)]
-            
+            apply_gradients = batch_idx % self.stride_apply == 0
+            loss, head_losses = self.train_batch(data, target, apply_gradients)
+
             # update epoch accumulates
             if loss is not None:
                 epoch_loss += loss
