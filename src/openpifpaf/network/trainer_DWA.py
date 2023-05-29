@@ -303,8 +303,8 @@ class Trainer():
             #print("avg loss")
             #print(self.avg_loss)
             w = [loss1/loss2 for loss1, loss2 in zip(self.avg_loss[epoch-self.start_epoch-1], self.avg_loss[epoch-self.start_epoch-2])]
-            #print("weights")
-            #print(w)
+            print("weights")
+            print(w)
             exp = [math.exp(weights/self.T) for weights in w]
             #print("exo")
             #print(exp)
