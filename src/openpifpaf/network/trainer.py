@@ -302,7 +302,7 @@ class Trainer():
             #print(epoch-self.start_epoch)
             #print("avg loss")
             #print(self.avg_loss)
-            w = [loss1/loss2 for loss1, loss2 in zip(self.avg_loss[epoch-self.start_epoch-1], self.avg_loss[epoch-self.start_epoch-2])]
+            w = [loss1/loss2 if loss2 != 0 else 0 for loss1, loss2 in zip(self.avg_loss[epoch-self.start_epoch-1], self.avg_loss[epoch-self.start_epoch-2])]
             print("weights")
             print(w)
             exp = [math.exp(weights/self.T) for weights in w]
