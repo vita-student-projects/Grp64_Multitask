@@ -141,6 +141,13 @@ The commands then are:\
 "python -m openpifpaf.eval --write-predictions --dataset=cocokp --cocokp-orientation-invariant=0.1--cocokp-upsample=2\
       --batch-size 1 --loader-workers 1 --checkpoint=multi_from_45.epoch052 --decoder=cifcaf:0 --seed-threshold 0.01 --force-complete-pose"
 
+# Video Presentation:
+
+The video presentation of our work can be found on Google Drive:
+
+https://drive.google.com/file/d/17cAe8tJkDr4yZCLa7kzS-k-8NohCBb7E/view?usp=sharing
+
+
 # Conclusion :
 
 Our implementation of the Dynamic Weight Average method does not seem to improve the training of a multi-task neural network significantly.
