@@ -112,6 +112,32 @@ number of epochs.
 
 ![Screenshot 2023-05-31 000004](https://github.com/vita-student-projects/Grp64_Multitask/assets/53184051/b484da57-57da-4dff-a41c-96592eab964d)
 
+# How to train:
+
+To train a model using our implementation of DWA, one needs to clone this GitHub repository and install openpifpaf as editable following the guidelines in the Openpifpaf guide (https://vita-epfl.github.io/openpifpaf/dev.html#modify-code). It is also possible to download the trainer.py file (Grp64_Multitask/src/openpifpaf/network/trainer.py) and replace the one in an existing version of openpifpaf.
+
+The checkpoints can be downloaded from Google Drive (https://drive.google.com/drive/folders/1NiMCZw3xX6JWpLKEJJryJGgutMddfjjS?usp=sharing).
+
+The command used to start a training from basenet shufflenetv2k30 is the following: 
+"openpifpaf.train --dataset=cocokp-animal-apollo --basenet=shufflenetv2k30\
+      --apollo-square-edge=513 --lr=0.0002 --momentum=0.9  --b-scale=5.0 --epochs=500\
+          --lr-decay 160 260 --lr-decay-epochs=10  --weight-decay=1e-5 --val-interval 1\
+              --loader-workers 1 --apollo-upsample 2 --apollo-bmin=2 --batch-size=10 --clip-grad-value=10.0\
+                  --animal-square-edge=513 --animal-extended-scale --animal-orientation-invariant=0.1\
+                      --animal-upsample=2 --animal-bmin=2 --cocokp-square-edge=513 --cocokp-extended-scale\
+                          --cocokp-orientation-invariant=0.1 --cocokp-upsample=2"
+                          
+# How to evaluate:
+
+It is necessary to evaluate the model on the three datasets separately. The checkpoint to evaluate can be trained or downloaded.
+The commands then are:
+"python -m openpifpaf.eval --write-predictions --dataset=animal --animal-upsample=2 --animal-no-eval-annotation-filter\
+      --batch-size 1 --loader-workers 1 --checkpoint=multi_from_45.epoch052 --decoder=cifcaf:0 --seed-threshold 0.01 --force-complete-pose"
+"python -m openpifpaf.eval --write-predictions --dataset=apollo --apollo-upsample=2 --apollo-bmin=2 --batch-size 1\
+      --loader-workers 1 --checkpoint=multi_from_45.epoch052 --decoder=cifcaf:0 --seed-threshold 0.01 --force-complete-pose"
+"python -m openpifpaf.eval --write-predictions --dataset=cocokp --cocokp-orientation-invariant=0.1--cocokp-upsample=2\
+      --batch-size 1 --loader-workers 1 --checkpoint=multi_from_45.epoch052 --decoder=cifcaf:0 --seed-threshold 0.01 --force-complete-pose"
+
 # Conclusion :
 
 Our implementation of the Dynamic Weight Average method does not seem to improve the training of a multi-task neural network significantly.
