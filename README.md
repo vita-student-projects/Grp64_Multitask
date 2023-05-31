@@ -119,6 +119,7 @@ To train a model using our implementation of DWA, one needs to clone this GitHub
 The checkpoints can be downloaded from Google Drive (https://drive.google.com/drive/folders/1NiMCZw3xX6JWpLKEJJryJGgutMddfjjS?usp=sharing).
 
 The command used to start a training from basenet shufflenetv2k30 is the following:\
+\
 "openpifpaf.train --dataset=cocokp-animal-apollo --basenet=shufflenetv2k30\
       --apollo-square-edge=513 --lr=0.0002 --momentum=0.9  --b-scale=5.0 --epochs=500\
           --lr-decay 160 260 --lr-decay-epochs=10  --weight-decay=1e-5 --val-interval 1\
@@ -133,8 +134,10 @@ It is necessary to evaluate the model on the three datasets separately. The chec
 The commands then are:\
 "python -m openpifpaf.eval --write-predictions --dataset=animal --animal-upsample=2 --animal-no-eval-annotation-filter\
       --batch-size 1 --loader-workers 1 --checkpoint=multi_from_45.epoch052 --decoder=cifcaf:0 --seed-threshold 0.01 --force-complete-pose"
+      \
 "python -m openpifpaf.eval --write-predictions --dataset=apollo --apollo-upsample=2 --apollo-bmin=2 --batch-size 1\
       --loader-workers 1 --checkpoint=multi_from_45.epoch052 --decoder=cifcaf:0 --seed-threshold 0.01 --force-complete-pose"
+      \
 "python -m openpifpaf.eval --write-predictions --dataset=cocokp --cocokp-orientation-invariant=0.1--cocokp-upsample=2\
       --batch-size 1 --loader-workers 1 --checkpoint=multi_from_45.epoch052 --decoder=cifcaf:0 --seed-threshold 0.01 --force-complete-pose"
 
