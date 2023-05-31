@@ -91,6 +91,8 @@ We only managed to train the network up to 45 epochs on SCITAS EPFL clusters, de
 
 # Results :
 
+All the trained models and the results can be downloaded on Google Drive: https://drive.google.com/drive/folders/1NiMCZw3xX6JWpLKEJJryJGgutMddfjjS?usp=sharing
+
 ## Signle dataset :
 
 A significant improvement is seen on metrics AR and ARL. This can be interpreted as an
