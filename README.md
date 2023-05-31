@@ -52,8 +52,6 @@ https://vita-epfl.github.io/openpifpaf/plugins_apollocar3d.html
 As mentioned in the introduction, we decided to implement Dynamic Weight Average (DWA) in the existing OpenPifPaf architecture. It is a method thanks to which wecan adapt the model loss
 during training by taking into account the rate of change of each of the haed losses. Weights are indeed computed from the following formula :
 
-![DWA](https://pic4.zhimg.com/v2-a5fca49729daa6a85566a22d823728bb_r.jpg)
-
 ![Screenshot 2023-05-31 121635](https://github.com/vita-student-projects/Grp64_Multitask/assets/53184051/48a19673-f9bb-40a1-83a8-e9155933292e)
 
 Where the weights on the right hand side of the formula correspond to the ratio between the head loss k at time t-1 and the head loss at time t-2.
@@ -98,6 +96,8 @@ We only managed to train the network up to 45 epochs on SCITAS EPFL clusters, de
 A significant improvement is seen on metrics AR and ARL. This can be interpreted as an
 improvement of a specific head and therefore on a specific feature, but not of the overall model, which can for instance be interpreted from the ARM metric that didn't really change compared to the classical openpifpaf performance.
 
+![Screenshot 2023-05-31 122429](https://github.com/vita-student-projects/Grp64_Multitask/assets/53184051/4a2f8417-3b3c-4fe7-b17e-d046d89f3a80)
+
 ## Multiple datasets : 
 
 The most significant changes are observed on the AnimalPose evaluation. It is the dataset
@@ -107,6 +107,8 @@ The score of the ApolloCar3D dataset are decreasing, from the baseline to furthe
 This might be due to the number of keypoints which is greater in the ApolloCar3D dataset
 than in the two other datasets, hence having more feedback and a stronger impact on a low
 number of epochs.
+
+![Screenshot 2023-05-31 000004](https://github.com/vita-student-projects/Grp64_Multitask/assets/53184051/b484da57-57da-4dff-a41c-96592eab964d)
 
 # Conclusion :
 
