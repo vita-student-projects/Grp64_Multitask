@@ -147,6 +147,10 @@ The video presentation of our work can be found on Google Drive:
 
 https://drive.google.com/file/d/17cAe8tJkDr4yZCLa7kzS-k-8NohCBb7E/view?usp=sharing
 
+Link to our presentation:
+
+https://docs.google.com/presentation/d/1wRtX78DiWmwbLhGm0WYxyil2IMTb4rlglvNOyGJCg58/edit?usp=sharing
+
 
 # Conclusion :
 
