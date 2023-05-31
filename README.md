@@ -54,6 +54,8 @@ during training by taking into account the rate of change of each of the haed lo
 
 ![DWA](https://pic4.zhimg.com/v2-a5fca49729daa6a85566a22d823728bb_r.jpg)
 
+![Screenshot 2023-05-31 121635](https://github.com/vita-student-projects/Grp64_Multitask/assets/53184051/48a19673-f9bb-40a1-83a8-e9155933292e)
+
 Where the weights on the right hand side of the formula correspond to the ratio between the head loss k at time t-1 and the head loss at time t-2.
 The final loss is then computed as the weighted sum of each of those head losses.
 
